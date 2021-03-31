@@ -117,3 +117,4 @@ dmypy.json
 config.json
 *.session
 *.bin
+.idea
