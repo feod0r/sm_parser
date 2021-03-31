@@ -10,7 +10,7 @@ import asyncio
 from telethon import TelegramClient
 from telethon import functions, types
 import telethon
-config = json.load(open('config.json'))
+config = json.load(open('../config.json'))
 bot = telegram.Bot(config['tgToken'])
 
 filename = 'corrections.csv'

@@ -10,7 +10,7 @@ from Queue import Queue
 from telethon import TelegramClient
 from telethon import functions, types
 
-config = json.load(open('config.json'))
+config = json.load(open('../config.json'))
 
 class GrabSM(object):
     def __init__(self):

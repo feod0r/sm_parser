@@ -29,7 +29,7 @@ import telegram
  #                           __/ |
  #                          |___/ 
 
-config = json.load(open('config.json'))
+config = json.load(open('../config.json'))
 
 bot = telegram.Bot(config['tgToken'])
 
