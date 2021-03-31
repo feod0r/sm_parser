@@ -24,7 +24,7 @@ config = json.load(open('../config.json'))
 
 blacklist = []
 
-f = open('black.list', 'r')
+f = open('../data/black.list', 'r')
 blacklist = f.read().split('\n')
 f.close()
 

@@ -131,6 +131,7 @@ def predict(text):
  # |_|                                     |___/        
 
 def postTg(post, pred):
+    file = 
     if pred:
         # search engine/index of post/ owner of post
         peer_id = post.get('peer_id', 0)

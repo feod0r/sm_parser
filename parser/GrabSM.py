@@ -42,7 +42,7 @@ class GrabSM(object):
         # 8-903-111-11-10
         # добавить парсинг по социальным сетям вк фб и телеграм
         # живая лента по новым публикациям в сми
-        f = open('req.txt', 'r')
+        f = open('../data/req.txt', 'r')
         self.requests = f.read().split('\n')
         f.close()
         self.vkPool.protect()

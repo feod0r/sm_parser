@@ -23,7 +23,7 @@ class Queue:
 
     def insert(self, item):
         in_collection = False
-        f = open('black.list', 'r')
+        f = open('../data/black.list', 'r')
         global blacklist
         blacklist = f.read().split('\n')
         f.close()

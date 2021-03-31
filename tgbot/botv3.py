@@ -13,7 +13,7 @@ import telethon
 config = json.load(open('../config.json'))
 bot = telegram.Bot(config['tgToken'])
 
-filename = 'corrections.csv'
+filename = '../data/corrections.csv'
 
 logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO
@@ -71,7 +71,7 @@ def button(update: Update, context: CallbackContext) -> None:
         elif data['r'] == 'd':
             query.delete_message()
         elif data['r'] == 'b':
-            f = open('black.list', "a")
+            f = open('../data/black.list', "a")
             f.write(str(data['o']) + '\n')
             f.close()
             # query.edit_message_text(text=f"Источник занесен в черный список ⬛️")
