@@ -10,7 +10,7 @@ import asyncio
 from telethon import TelegramClient
 from telethon import functions, types
 import telethon
-config = json.load(open('../config.json'))
+config = json.load(open('../config.json', 'r', encoding="utf-8"))
 bot = telegram.Bot(config['tgToken'])
 
 filename = '../data/corrections.csv'
@@ -58,20 +58,20 @@ def button(update: Update, context: CallbackContext) -> None:
             # query.edit_message_text(text=f"Пост помечен к удалению 📛")
             data['c'][2] = data['c'][2] + 1
             if text:
-                f = open(filename, "a")
+                f = open(filename, "a", encoding="utf-8")
                 f.write('0;' + text.replace(';', '') + '\n')
                 f.close()
         elif data['r'] == "+":
             # query.edit_message_text(text=query.message.text + "\nПост помечен как желаемый 👍🏽")
             data['c'][0] = data['c'][0] + 1
             if text:
-                f = open(filename, "a")
+                f = open(filename, "a", encoding="utf-8")
                 f.write('1;' + text + '\n')
                 f.close()
         elif data['r'] == 'd':
             query.delete_message()
         elif data['r'] == 'b':
-            f = open('../data/black.list', "a")
+            f = open('../data/black.list', "a", encoding="utf-8")
             f.write(str(data['o']) + '\n')
             f.close()
             # query.edit_message_text(text=f"Источник занесен в черный список ⬛️")

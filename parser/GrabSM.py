@@ -10,7 +10,7 @@ from Queue import Queue
 from telethon import TelegramClient
 from telethon import functions, types
 
-config = json.load(open('../config.json'))
+config = json.load(open('../config.json', 'r', encoding="utf-8"))
 
 class GrabSM(object):
     def __init__(self):
@@ -28,8 +28,8 @@ class GrabSM(object):
 
         self.vkPool = Queue()
 
-        self.newestPostTG = json.load(open('newestPostTG.json', 'r'))
-        self.newestPostVK = json.load(open('newestPostVK.json', 'r'))
+        self.newestPostTG = json.load(open('newestPostTG.json', 'r', encoding="utf-8"))
+        self.newestPostVK = json.load(open('newestPostVK.json', 'r', encoding="utf-8"))
 
         # отладка. ссылки сохранены в файл
         # self.links = json.load(open('links.json', 'r'))
@@ -42,7 +42,7 @@ class GrabSM(object):
         # 8-903-111-11-10
         # добавить парсинг по социальным сетям вк фб и телеграм
         # живая лента по новым публикациям в сми
-        f = open('../data/req.txt', 'r')
+        f = open('../data/req.txt', 'r', encoding="utf-8")
         self.requests = f.read().split('\n')
         f.close()
         self.vkPool.protect()
@@ -87,7 +87,7 @@ class GrabSM(object):
         duplicates = 0
         posts.reverse()
 
-        f = open('black.list', 'r')
+        f = open('../data/black.list', 'r', encoding="utf-8")
         global blacklist
         blacklist = f.read().split('\n')
         f.close()

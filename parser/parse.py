@@ -20,11 +20,11 @@ from GrabSM import GrabSM
 log = logging.getLogger('werkzeug')
 log.setLevel(logging.ERROR)
 
-config = json.load(open('../config.json'))
+config = json.load(open('../config.json', encoding="utf-8"))
 
 blacklist = []
 
-f = open('../data/black.list', 'r')
+f = open('../data/black.list', 'r', encoding="utf-8")
 blacklist = f.read().split('\n')
 f.close()
 

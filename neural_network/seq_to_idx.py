@@ -131,10 +131,12 @@ def predict(text):
  # |_|                                     |___/        
 
 def postTg(post, pred):
-    file = open('../data/predictLog.csv', 'a')
-    trimmed_post = post[:130]
-    trimmed_post = trimmed_post.replace(';', '').replace('\n','').replace('\r','').replace('\f', '')
-    file.write(trimmed_post+'\n')
+    file = open('../data/predictLog.csv', 'a', encoding="utf-8")
+    trimmed_post = post['text'][:150]
+    trimmed_post = trimmed_post.replace(';', '').replace('\n', '').replace('\r','').replace('\f', '').replace('"', '')
+    trimmed_post = trimmed_post.replace('\\', '').replace('\"', '')
+    file.write(str(pred) + ';' + trimmed_post+ ';'+ post['wallUrl'] + '\n')
+    file.close()
 
 
     if pred:
