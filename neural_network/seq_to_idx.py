@@ -131,7 +131,12 @@ def predict(text):
  # |_|                                     |___/        
 
 def postTg(post, pred):
-    file = 
+    file = open('../data/predictLog.csv', 'a')
+    trimmed_post = post[:130]
+    trimmed_post = trimmed_post.replace(';', '').replace('\n','').replace('\r','').replace('\f', '')
+    file.write(trimmed_post+'\n')
+
+
     if pred:
         # search engine/index of post/ owner of post
         peer_id = post.get('peer_id', 0)
