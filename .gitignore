@@ -118,3 +118,4 @@ config.json
 *.session
 *.bin
 .idea
+.DS_store

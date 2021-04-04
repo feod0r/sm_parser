@@ -1,16 +1,38 @@
 # SM_parser
  
 
-First of all- copy example config to `config.py`
+First of all- copy example config to `config.py` and configure that
 
-win instructions to run flask:
+#run
+##bot
+	cd ./tgbot
+	python3 botv3.py
 
-	set FLASK_APP=hello.py
+##parser
+
+win instructions to run flasked parser:
+
+	set FLASK_APP=parse.py
 	python -m flask run
+	
+##neural network
+note: flask parser needed to be run first
+
+	cd ./neural_network
+	python3 seq_to_idx.py
+	
+	
+	
+	
+#pre install
+	
+	python -m venv ./venv/
+	
+	source ./venv/bin/activate
 
 #Dependencies
 
-    pip install absl-py anyio APScheduler argon2-cffi astunparse async-generator attrs Babel backcall bleach cachetools certifi cffi chardet click colorama DAWG-Python decorator defusedxml docopt entrypoints filelock Flask flatbuffers gast google-auth google-auth-oauthlib google-pasta grpcio h5py idna ipykernel ipython ipython-genutils itsdangerous jedi Jinja2 joblib json5 jsonschema jupyter-client jupyter-core jupyter-packaging jupyter-server jupyterlab jupyterlab-pygments jupyterlab-server Keras-Preprocessing Markdown MarkupSafe mistune nbclassic nbclient nbconvert nbformat nest-asyncio nltk notebook numpy oauthlib opt-einsum packaging pandas pandocfilters parso pickleshare pip prometheus-client prompt-toolkit protobuf pyaes pyasn1 pyasn1-modules pycparser Pygments pymongo pymorphy2 pymorphy2-dicts-ru pyparsing pyrsistent python-dateutil python-telegram-bot pytz pywin32 pywinpty pyzmq regex requests requests-oauthlib rsa sacremoses scikit-learn scipy Send2Trash setuptools six sklearn sniffio telegram Telethon tensorboard tensorboard-plugin-wit tensorflow tensorflow-estimator termcolor terminado testpath threadpoolctl tokenizers torch tornado tqdm traitlets transformers typing-extensions tzlocal urllib3 wcwidth webencodings Werkzeug wheel wrapt 
+    python3 -m pip install absl-py anyio APScheduler argon2-cffi astunparse async-generator attrs Babel backcall bleach cachetools certifi cffi chardet click colorama DAWG-Python decorator defusedxml docopt entrypoints filelock Flask flatbuffers gast google-auth google-auth-oauthlib google-pasta grpcio h5py idna ipykernel ipython ipython-genutils itsdangerous jedi Jinja2 joblib json5 jsonschema jupyter-client jupyter-core jupyter-packaging jupyter-server jupyterlab jupyterlab-pygments jupyterlab-server Keras-Preprocessing Markdown MarkupSafe mistune nbclassic nbclient nbconvert nbformat nest-asyncio nltk notebook numpy oauthlib opt-einsum packaging pandas pandocfilters parso pickleshare pip prometheus-client prompt-toolkit protobuf pyaes pyasn1 pyasn1-modules pycparser Pygments pymongo pymorphy2 pymorphy2-dicts-ru pyparsing pyrsistent python-dateutil python-telegram-bot pytz pywinpty pyzmq regex requests requests-oauthlib rsa sacremoses scikit-learn scipy Send2Trash setuptools six sklearn sniffio telegram Telethon tensorboard tensorboard-plugin-wit tensorflow tensorflow-estimator termcolor terminado testpath threadpoolctl tokenizers torch tornado tqdm traitlets transformers typing-extensions tzlocal urllib3 wcwidth webencodings Werkzeug wheel wrapt 
 
 Versions
 
