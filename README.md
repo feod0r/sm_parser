@@ -2,6 +2,33 @@
  
 
 First of all- copy example config to `config.py` and configure that
+#how to use
+##bot
+List of all current commands:
+
+	/listtg
+	/unstg
+	/subtg
+	/help
+	::bot buttons callback::
+###listtg
+It returns answer like this. this is a list of all subscribtion of backend tg user. left of the list- channel name in the human readeble format. 
+Right- id list. its needed to unsubscribe from source
+
+	Список подписок:
+	Mash | 1117628569
+	РТУ МИРЭА | 1248077803
+	КОСМОС РЯДОМ | 1357504861
+	
+###unstg
+it used to unsubscribe from channel. usage: 
+
+	/unstg link|id
+
+###subtg
+it used to subscribe from channel. usage: 
+
+	/subtg link|id
 
 #run
 ##bot
