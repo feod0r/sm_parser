@@ -51,10 +51,13 @@ class GrabSM(object):
         self.requests = f.read().split('\n')
         f.close()
         self.vkPool.protect()
+
+        # парсинг телеги
         for q in self.requests:
             print(datetime.now().strftime("[%D %H:%M:%S]"),
                   "[TG] Post/Dup {}".format(self.search_tg(q.split(':')[1], 100)).ljust(33, ' '), '| {}'.format(q))
 
+        # парсинг вк
         for q in self.requests:
             if not q.split(':')[1] in self.newestPostVK:
                 self.newestPostVK[q] = 0
