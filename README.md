@@ -1,8 +1,15 @@
 # SM_parser
  
 
-First of all- copy example config to `config.py` and configure that
+#system req
+	4x-8x cpu
+	12gb+ ram
+	100gm rom (ssd)
+	os ubuntu server 20.04
+	
+
 #how to use
+First of all- copy example config to `config.py` and configure that
 ##bot
 List of all current commands:
 
