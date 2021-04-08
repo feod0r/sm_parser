@@ -2,10 +2,15 @@ import json
 from datetime import datetime
 
 import pymongo
+
 import requests
+import sys
 import asyncio
 from operator import itemgetter
 
+sys.path.insert(1, '../')
+
+from DbConnect import DbConnect
 from Queue import Queue
 from telethon import TelegramClient
 from telethon import functions, types
@@ -48,13 +53,18 @@ class GrabSM(object):
         self.vkPool.protect()
         for q in self.requests:
             print(datetime.now().strftime("[%D %H:%M:%S]"),
-                  "[TG] Post/Dup {}".format(self.search_tg(q, 100)).ljust(33, ' '), '| {}'.format(q))
+                  "[TG] Post/Dup {}".format(self.search_tg(q.split(':')[1], 100)).ljust(33, ' '), '| {}'.format(q))
 
         for q in self.requests:
-            if not q in self.newestPostVK:
+            if not q.split(':')[1] in self.newestPostVK:
                 self.newestPostVK[q] = 0
             print(datetime.now().strftime("[%D %H:%M:%S]"),
-                  "[VK] Post/Dup {}".format(self.add_vk(self.vk_search(q,125),q)).ljust(33,' '), '| {}'.format(q))
+                  "[VK] Post/Dup {}".format(self.add_vk(self.vk_search(q.split(':')[1],125), q.split(':')[1])).ljust(33,' '), '| {}'.format(q))
+
+        db = DbConnect()
+        for i in self.vkPool.items:
+            db.insert('ИМПМО', i['query'], i['text'], i['wallUrl'])
+
 
         # if self.iteration == 0:
         #     self.vkPool.clear()
