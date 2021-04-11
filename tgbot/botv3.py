@@ -34,6 +34,9 @@ def start(update: Update, context: CallbackContext) -> None:
                               '/unstg - отписаться от канала в телеграмм\n'
                               '/listtg - список подписок телеграмм\n')
 
+def changeReq(update: Update, context: CallbackContext) -> None:
+    pass
+
 
 def ranging(update: Update, context: CallbackContext) -> None:
     data = {
