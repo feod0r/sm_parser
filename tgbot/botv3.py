@@ -2,9 +2,10 @@ import logging
 import json
 import threading
 import requests
-from telegram import InlineKeyboardButton, InlineKeyboardMarkup, Update
+from telegram import InlineKeyboardButton, InlineKeyboardMarkup, Update, ReplyKeyboardMarkup
 import telegram
-from telegram.ext import Updater, CommandHandler, CallbackQueryHandler, CallbackContext
+from telegram.ext import Updater, CommandHandler, CallbackQueryHandler, CallbackContext, ConversationHandler, \
+    MessageHandler, Filters
 import asyncio
 import sys
 
@@ -33,9 +34,44 @@ def start(update: Update, context: CallbackContext) -> None:
                               '/subtg - подписаться на канал в телеграмм\n'
                               '/unstg - отписаться от канала в телеграмм\n'
                               '/listtg - список подписок телеграмм\n')
+    context.user_data['test'] = 123
+    print(context.user_data)
+
 
 def changeReq(update: Update, context: CallbackContext) -> None:
-    pass
+    req = open('../data/req.txt', 'r', encoding="utf-8")
+    req = req.read().split('\n')
+    print(context.user_data)
+
+    for q in req:
+        themes[q.split(':')[0]] = 1
+
+    keyboard = []
+    for key in themes.keys():
+        datap = {
+            'r': 'ct',
+            't': key
+        }
+        keyboard.append(
+            [InlineKeyboardButton(key, callback_data=json.dumps(datap, ensure_ascii=False).replace(' ', ''))])
+
+    dataAdd = {
+        'r': 'ct',
+        't': 'ADD',
+        'a': 'add'
+    }
+    keyboard.append(
+        [InlineKeyboardButton('Добавить', callback_data=json.dumps(dataAdd, ensure_ascii=False).replace(' ', ''))])
+    dataDel = {
+        'r': 'ct',
+        't': 'DEL',
+        'a': 'del'
+    }
+    keyboard.append(
+        [InlineKeyboardButton('Удалить', callback_data=json.dumps(dataDel, ensure_ascii=False).replace(' ', ''))])
+
+    reply_markup = InlineKeyboardMarkup(keyboard)
+    update.message.reply_text('Выберете тему для редактирования:\n',reply_markup=reply_markup)
 
 
 def ranging(update: Update, context: CallbackContext) -> None:
@@ -68,6 +104,7 @@ def button(update: Update, context: CallbackContext) -> None:
     query.answer()
     data = json.loads(query.data)
     print(data)
+    reqCorr = ['+', '-', 'r', 'd', 'b']
 
     # data = {}
     if data.get('r') == 'rS' or data.get('r') == 'rA':
@@ -123,7 +160,7 @@ def button(update: Update, context: CallbackContext) -> None:
             reply_markup = InlineKeyboardMarkup(keyboard)
             query.edit_message_text(text=f"[{data['t']}][{row[3]}]\n{row[4]}")
             query.edit_message_reply_markup(reply_markup=reply_markup)
-    else:
+    elif data['r'] in reqCorr:
         data['s'] = data['i'].split('/')[0]
         data['o'] = data['i'].split('/')[2]
         data['i'] = data['i'].split('/')[1]
@@ -200,6 +237,19 @@ def button(update: Update, context: CallbackContext) -> None:
 
         if data['r'] != 'd':
             query.edit_message_reply_markup(reply_markup=reply_markup)
+    elif data['r'] == 'ct':
+        context.user_data['theme'] = data.get('t', '')
+        if data.get('t', '') == 'ADD' or data.get('t', '') == 'DEL':
+            query.edit_message_text(text="Напишите тему:")
+        else:
+            query.edit_message_text(text="Выбрана тема " + data.get('t', ''))
+            query.message.reply_text(text="Cписок текущих запросов\n"
+                                         "1) H\n"
+                                         "2) O\n"
+                                         "what to do?")
+    else:
+        query.edit_message_text(text="another unregistered data of callback "
+                                     "updater.dispatcher.add_handler(CallbackQueryHandler(button))")
 
 
 def help_command(update: Update, context: CallbackContext) -> None:
@@ -266,6 +316,28 @@ def vkPost(post):
         requests.post("https://api.vk.com/method/wall.getById?" + config['vkSerKey'] + config['vkVer'], postVK).text)
     return req['response']
 
+def cancel(update: Update, _: CallbackContext) -> int:
+    user = update.message.from_user
+    logger.info("User %s canceled the conversation.", user.first_name)
+    update.message.reply_text(
+        'Bye! I hope we can talk again some day.'
+    )
+
+    return ConversationHandler.END
+
+
+def mess_handle(update: Update, context: CallbackContext) -> None:
+    user_data = context.user_data
+    if user_data.get('theme') == 'DEL':
+        update.message.reply_text('Удалено ' + update.message.text)
+        del context.user_data['theme']
+    elif user_data.get('theme') == 'ADD':
+        update.message.reply_text('Добавлено ' + update.message.text)
+        del context.user_data['theme']
+    elif user_data.get('theme', '') != '':
+        update.message.reply_text('В тему ' +context.user_data['theme'] + ' добавлен новый запрос: ' + update.message.text)
+
+
 
 def runbot():
     updater = Updater(config['tgToken'])
@@ -277,8 +349,24 @@ def runbot():
     updater.dispatcher.add_handler(CommandHandler('unstg', unsubscribe_tg))
     updater.dispatcher.add_handler(CommandHandler('listtg', list_subs))
     updater.dispatcher.add_handler(CommandHandler('ranging', ranging))
+    updater.dispatcher.add_handler(CommandHandler('themes', changeReq))
+    updater.dispatcher.add_handler(MessageHandler(Filters.text, mess_handle))
 
-
+    # conv_handler = ConversationHandler(
+    #     entry_points=[CommandHandler('themes2', themes)],
+    #     states={
+    #         0: [MessageHandler(Filters.regex('^(Boy|Girl|Other)$'), add_theme)],
+    #         PHOTO: [MessageHandler(Filters.photo, photo), CommandHandler('skip', skip_photo)],
+    #         LOCATION: [
+    #             MessageHandler(Filters.location, location),
+    #             CommandHandler('skip', skip_location),
+    #         ],
+    #         BIO: [MessageHandler(Filters.text & ~Filters.command, bio)],
+    #     },
+    #     fallbacks=[CommandHandler('cancel', cancel)],
+    # )
+    #
+    # updater.dispatcher.add_handler(conv_handler)
     updater.start_polling()
 
     # Run the bot until the user presses Ctrl-C or the process receives SIGINT,
