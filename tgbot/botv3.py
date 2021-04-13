@@ -41,7 +41,7 @@ def start(update: Update, context: CallbackContext) -> None:
 def changeReq(update: Update, context: CallbackContext) -> None:
     req = open('../data/req.txt', 'r', encoding="utf-8")
     req = req.read().split('\n')
-    print(context.user_data)
+    # print(context.user_data)
 
     for q in req:
         themes[q.split(':')[0]] = 1
@@ -95,6 +95,56 @@ def ranging(update: Update, context: CallbackContext) -> None:
     update.message.reply_text('Здравствуй друг! Данная команда нужна для формирования обучающей выборки для нейронной '
                               'сети.\n Твоя задача- отвечать, удовлетворяет ли интересующему контексту текст, '
                               'или нет. Для большего понимания будет приведен запрос, по которому получен этот текст.',reply_markup=reply_markup)
+
+
+def read_req(theme):
+    req = open('../data/req.txt', 'r', encoding="utf-8")
+    rest = req.read().split('\n')
+    req_arr = []
+    for q in rest:
+        if q!='':
+            if q.split(':')[0] == theme:
+                req_arr.append(q.split(':')[1])
+    req.close()
+    return req_arr
+
+
+def add_req(theme, rest):
+    req = open('../data/req.txt', 'r', encoding="utf-8")
+    old = req.read().split('\n')
+    req.close()
+    req = open('../data/req.txt', 'w', encoding="utf-8")
+
+    for row in old:
+        # print(row.split(':')[0], row.split(':')[1], theme, rest, not ((row.split(':')[0] != theme) and (row.split(':')[1] != str(rest))))
+        if row != '':
+            if (not ((row.split(':')[0] == theme) and (row.split(':')[1] == str(rest)))):
+                buf = f"{row.split(':')[0]}:{row.split(':')[1]}\n"
+                req.write(buf)
+    req.write(f"{theme}:{rest}")
+    req.close()
+
+
+def del_req(theme, rest):
+    req = open('../data/req.txt', 'r', encoding="utf-8")
+    old = req.read().split('\n')
+    req.close()
+    req = open('../data/req.txt', 'w', encoding="utf-8")
+    for row in old:
+        if not ((row.split(':')[0] == theme) and (row.split(':')[1] == str(rest))):
+            req.write(f"{row.split(':')[0]}:{row.split(':')[1]}\n")
+    req.close()
+
+
+def del_theme(theme):
+    req = open('../data/req.txt', 'r', encoding="utf-8")
+    old = req.read().split('\n')
+    req.close()
+    req = open('../data/req.txt', 'w', encoding="utf-8")
+    for row in old:
+        if row.split(':')[0] != theme and row != '':
+            req.write(f"{row.split(':')[0]}:{row.split(':')[1]}\n")
+    req.close()
 
 
 def button(update: Update, context: CallbackContext) -> None:
@@ -243,10 +293,12 @@ def button(update: Update, context: CallbackContext) -> None:
             query.edit_message_text(text="Напишите тему:")
         else:
             query.edit_message_text(text="Выбрана тема " + data.get('t', ''))
-            query.message.reply_text(text="Cписок текущих запросов\n"
-                                         "1) H\n"
-                                         "2) O\n"
-                                         "what to do?")
+            list_int_file = ''
+            for n,i in enumerate(read_req(data.get('t', ''))):
+                list_int_file = list_int_file + str(n) + ') ' + i + '\n'
+            query.message.reply_text(text="Cписок текущих запросов\n" + list_int_file +
+                                         "Напиши \"+запрос\" чтобы добавить тему\n"
+                                         "Напиши \"-запрос\" или \"-id\" чтобы удалить тему")
     else:
         query.edit_message_text(text="another unregistered data of callback "
                                      "updater.dispatcher.add_handler(CallbackQueryHandler(button))")
@@ -330,12 +382,25 @@ def mess_handle(update: Update, context: CallbackContext) -> None:
     user_data = context.user_data
     if user_data.get('theme') == 'DEL':
         update.message.reply_text('Удалено ' + update.message.text)
+        del_theme(update.message.text)
         del context.user_data['theme']
     elif user_data.get('theme') == 'ADD':
-        update.message.reply_text('Добавлено ' + update.message.text)
-        del context.user_data['theme']
+        update.message.reply_text('Добавлена тема ' + update.message.text + '. необходимо добавить хотя бы 1 запрос.\n'
+                                                                            'чтобы добавить запрос, напишите символ "+"'
+                                                                            'и без пробелов сам запрос.')
+        context.user_data['theme'] = update.message.text[:5]
+        # del context.user_data['theme']
     elif user_data.get('theme', '') != '':
-        update.message.reply_text('В тему ' +context.user_data['theme'] + ' добавлен новый запрос: ' + update.message.text)
+        if update.message.text[0] == '+':
+            add_req(user_data.get('theme', ''), update.message.text[1:])
+            update.message.reply_text(
+                'В тему ' + context.user_data['theme'] + ' добавлен новый запрос: ' + update.message.text[1:])
+        elif update.message.text[0] == '-':
+            del_req(user_data.get('theme', ''), update.message.text[1:])
+            update.message.reply_text(
+                'Из темы ' + context.user_data['theme'] + ' удален запрос: ' + update.message.text[1:])
+        else:
+            update.message.reply_text('Нет управляющего символа для запроса. Сейчас выбрана тема: ' + context.user_data['theme'] )
 
 
 
