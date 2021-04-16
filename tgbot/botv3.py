@@ -32,6 +32,7 @@ def start(update: Update, context: CallbackContext) -> None:
     update.message.reply_text('Доступные команды:\n'
                               '/ranging - классификация обучающей выборки\n'
                               '/subtg - подписаться на канал в телеграмм\n'
+                              '/themes - редактирование списка запросов\n'
                               '/unstg - отписаться от канала в телеграмм\n'
                               '/listtg - список подписок телеграмм\n')
     context.user_data['test'] = 123
