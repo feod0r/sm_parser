@@ -7,6 +7,7 @@ import requests
 import sys
 import asyncio
 from operator import itemgetter
+import re
 
 sys.path.insert(1, '../')
 
@@ -76,6 +77,42 @@ class GrabSM(object):
 
         json.dump(self.newestPostTG, open('newestPostTG.json', 'w', encoding='utf8'), ensure_ascii=False)
         json.dump(self.newestPostVK, open('newestPostVK.json', 'w', encoding='utf8'), ensure_ascii=False)
+
+    def parse_link(self, url):
+        def cleanup(text):
+            #             text = unicode(text, "utf-8")
+            text = text.replace('\r', ' ')
+            text = text.replace('\n', ' ')
+            text = text.replace('\t', ' ')
+            text = re.sub(r'<head>.*</head>', '', text)
+            text = re.sub(r'<form.*</form>', '', text)
+            #             text = re.sub(r'<script[^>]*>(([^<])*(<[^\/]*/>|<\/script>)*)*', '', text)
+            text = re.sub(r'<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>', '', text)
+            text = re.sub(r'<iframe.*</iframe>', '', text)
+            text = re.sub(r'<select.*</select>', '', text)
+            text = re.sub(r'<table.*</table>', '', text)
+            text = re.sub(r'<ul.*</ul>', '', text)
+            text = re.sub(r'<style[^>]*>[^<]*<\/style>', '', text)
+            text = re.sub(r'\s+', ' ', text)
+            #     text = re.sub(r'<[a-zA-Z0-9\/\ "=:;\._\-\%]*>', '', text)
+            text = re.sub(r'<[^>]*>', '', text)
+            return text
+
+        try:
+            req = requests.get(url, timeout=5)
+        except:
+            req = False
+        story = []
+
+        if req:
+            if req.status_code == 200:
+                text = req.text
+                mylist = [cleanup(x) for x in text.replace('\n', '').replace('\r', '').split('</div>') if
+                          cleanup(x) and len(cleanup(x)) > 90]
+                for i in mylist:
+                    story.append(cleanup(i))
+
+        return story
 
     # db    db db   dD
     # 88    88 88 ,8P'
