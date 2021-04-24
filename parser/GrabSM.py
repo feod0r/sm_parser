@@ -53,6 +53,8 @@ class GrabSM(object):
         f.close()
         self.vkPool.protect()
 
+        db = DbConnect()
+
         # парсинг телеги
         for q in self.requests:
             print(datetime.now().strftime("[%D %H:%M:%S]"),
@@ -65,7 +67,7 @@ class GrabSM(object):
             print(datetime.now().strftime("[%D %H:%M:%S]"),
                   "[VK] Post/Dup {}".format(self.add_vk(self.vk_search(q.split(':')[1],125), q.split(':')[1])).ljust(33,' '), '| {}'.format(q))
 
-        db = DbConnect()
+
         for i in self.vkPool.items:
             db.insert('ИМПМО', i['query'], i['text'], i['wallUrl'])
 

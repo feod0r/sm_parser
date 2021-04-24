@@ -10,6 +10,10 @@ class DbConnect:
             "CREATE TABLE IF NOT EXISTS `votes` ( `id` INTEGER PRIMARY KEY AUTOINCREMENT, `class` INT NOT NULL "
             "DEFAULT '-1' , `theme` TEXT NOT NULL , `query` TEXT NOT NULL , `text` TEXT NOT NULL, `link` text NOT "
             "NULL);")
+        cursor.execute(
+            "CREATE TABLE IF NOT EXISTS `links` ( `id` INTEGER PRIMARY KEY AUTOINCREMENT, `link` TEXT NOT NULL , "
+            "`caption` TEXT NULL DEFAULT NULL , `text` TEXT NOT NULL , `theme` TEXT NOT NULL , `"
+            "date` DATE NOT NULL DEFAULT CURRENT_TIMESTAMP)")
         database.commit()
         cursor.close()
         database.close()
