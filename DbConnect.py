@@ -13,7 +13,7 @@ class DbConnect:
         cursor.execute(
             "CREATE TABLE IF NOT EXISTS `links` ( `id` INTEGER PRIMARY KEY AUTOINCREMENT, `link` TEXT NOT NULL , "
             "`caption` TEXT NULL DEFAULT NULL , `text` TEXT NOT NULL , `theme` TEXT NOT NULL , `"
-            "date` DATE NOT NULL DEFAULT CURRENT_TIMESTAMP)")
+            "date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP)")
         database.commit()
         cursor.close()
         database.close()
@@ -76,3 +76,23 @@ class DbConnect:
         database.close()
         return ans
 
+
+    def insert_link(self, link, text, theme):
+        query = "INSERT INTO `links` (`id`, `link`, `caption`, `text`, `theme`, `date`) VALUES (NULL, " \
+                "?, 'site', ?, ?, CURRENT_TIMESTAMP);"
+        database = sqlite3.connect(self.path)
+        cursor = database.cursor()
+        cursor.execute(query, (link, text, theme))
+        database.commit()
+        cursor.close()
+        database.close()
+
+
+    def show_links(self):
+        database = sqlite3.connect(self.path)
+        cursor = database.cursor()
+        ans = cursor.execute("SELECT * FROM links").fetchall()
+        database.commit()
+        cursor.close()
+        database.close()
+        return ans
