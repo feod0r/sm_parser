@@ -404,9 +404,57 @@ def mess_handle(update: Update, context: CallbackContext) -> None:
             update.message.reply_text('Нет управляющего символа для запроса. Сейчас выбрана тема: ' + context.user_data['theme'] )
 
 
+def links_theme(update: Update, context: CallbackContext) -> int:
+    db = DbConnect()
+    db_themes = db.show_themes_links()
+
+    query = 'Здравствуй, друг!\nВыбери тему, с которой ты хочешь работать (либо напиши новую):\n'
+    for i in db_themes:
+        query += str(i[0]) + "\n"
+    update.message.reply_text(query)
+    return 0
+
+
+def links_link(update: Update, context: CallbackContext) -> int:
+
+    context.user_data['link_theme'] = update.message.text
+    query = f'Тему "{update.message.text}" запомнил.\n А теперь, укажите ссылку: '
+    update.message.reply_text(query)
+    print(context.user_data)
+    return 1
+
+
+def links_caption(update: Update, context: CallbackContext) -> int:
+
+    context.user_data['link'] = update.message.text
+    query = f'Ссылку "{update.message.text}" сохранил.\n Ей можно придумать описание: '
+    update.message.reply_text(query)
+    print(context.user_data)
+    return 2
+
+
+def links_final(update: Update, context: CallbackContext) -> int:
+    db = DbConnect()
+    db.insert_links(context.user_data.get('link'), update.message.text, context.user_data.get('link_theme'))
+    query = f'Описание "{update.message.text}" сохранил.\n Конец'
+    update.message.reply_text(query)
+    return ConversationHandler.END
+
 
 def runbot():
     updater = Updater(config['tgToken'])
+    conv_handler = ConversationHandler(
+        entry_points=[CommandHandler('links', links_theme)],
+        states={
+            0: [MessageHandler(Filters.text, links_link)],
+            1: [MessageHandler(Filters.text, links_caption)],
+            2: [MessageHandler(Filters.text, links_final)],
+            # BIO: [MessageHandler(Filters.text & ~Filters.command, bio)],
+        },
+        fallbacks=[CommandHandler('cancel', cancel)],
+    )
+
+    updater.dispatcher.add_handler(conv_handler)
 
     updater.dispatcher.add_handler(CommandHandler('start', start))
     updater.dispatcher.add_handler(CallbackQueryHandler(button))
@@ -418,21 +466,8 @@ def runbot():
     updater.dispatcher.add_handler(CommandHandler('themes', changeReq))
     updater.dispatcher.add_handler(MessageHandler(Filters.text, mess_handle))
 
-    # conv_handler = ConversationHandler(
-    #     entry_points=[CommandHandler('themes2', themes)],
-    #     states={
-    #         0: [MessageHandler(Filters.regex('^(Boy|Girl|Other)$'), add_theme)],
-    #         PHOTO: [MessageHandler(Filters.photo, photo), CommandHandler('skip', skip_photo)],
-    #         LOCATION: [
-    #             MessageHandler(Filters.location, location),
-    #             CommandHandler('skip', skip_location),
-    #         ],
-    #         BIO: [MessageHandler(Filters.text & ~Filters.command, bio)],
-    #     },
-    #     fallbacks=[CommandHandler('cancel', cancel)],
-    # )
-    #
-    # updater.dispatcher.add_handler(conv_handler)
+
+
     updater.start_polling()
 
     # Run the bot until the user presses Ctrl-C or the process receives SIGINT,
