@@ -8,6 +8,7 @@ from telegram.ext import Updater, CommandHandler, CallbackQueryHandler, Callback
     MessageHandler, Filters
 import asyncio
 import sys
+import re
 
 sys.path.insert(1, '../')
 
@@ -408,7 +409,8 @@ def links_theme(update: Update, context: CallbackContext) -> int:
     db = DbConnect()
     db_themes = db.show_themes_links()
 
-    query = 'Здравствуй, друг!\nВыбери тему, с которой ты хочешь работать (либо напиши новую):\n'
+    query = 'Здравствуй, друг!\nВыбери тему, с которой ты хочешь работать (либо напиши новую). ' \
+            'В любой момент слово "отмена" прекратит процедуру: \n'
     for i in db_themes:
         query += str(i[0]) + "\n"
     update.message.reply_text(query)
@@ -416,29 +418,39 @@ def links_theme(update: Update, context: CallbackContext) -> int:
 
 
 def links_link(update: Update, context: CallbackContext) -> int:
-
+    if update.message.text.lower() == 'отмена':
+        update.message.reply_text('Отменено')
+        return ConversationHandler.END
     context.user_data['link_theme'] = update.message.text
     query = f'Тему "{update.message.text}" запомнил.\n А теперь, укажите ссылку: '
     update.message.reply_text(query)
     print(context.user_data)
+
     return 1
 
 
 def links_caption(update: Update, context: CallbackContext) -> int:
-
+    if update.message.text.lower() == 'отмена':
+        update.message.reply_text('Отменено')
+        return ConversationHandler.END
     context.user_data['link'] = update.message.text
-    query = f'Ссылку "{update.message.text}" сохранил.\n Ей можно придумать описание: '
+    query = ''
+    try:
+        req = requests.get(update.message.text, timeout=5)
+    except:
+        req = False
+    if req:
+        caption = str(re.findall(r'<title>([^<]*)<\/title>', req.text)[0]).replace('\r','').replace('\n','').replace('\t','')
+        db = DbConnect()
+        db.insert_links(context.user_data.get('link'), caption, context.user_data.get('link_theme'))
+        query = f'{context.user_data.get("link_theme")}\n "{caption}" сохранил.\n Готов к следующей ссылке'
+    else:
+        query = update.message.text + ' non valid link'
+        return 1
     update.message.reply_text(query)
+
     print(context.user_data)
-    return 2
-
-
-def links_final(update: Update, context: CallbackContext) -> int:
-    db = DbConnect()
-    db.insert_links(context.user_data.get('link'), update.message.text, context.user_data.get('link_theme'))
-    query = f'Описание "{update.message.text}" сохранил.\n Конец'
-    update.message.reply_text(query)
-    return ConversationHandler.END
+    return 1 #ConversationHandler.END
 
 
 def runbot():
@@ -448,8 +460,6 @@ def runbot():
         states={
             0: [MessageHandler(Filters.text, links_link)],
             1: [MessageHandler(Filters.text, links_caption)],
-            2: [MessageHandler(Filters.text, links_final)],
-            # BIO: [MessageHandler(Filters.text & ~Filters.command, bio)],
         },
         fallbacks=[CommandHandler('cancel', cancel)],
     )

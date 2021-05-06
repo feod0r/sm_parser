@@ -80,16 +80,19 @@ class DbConnect:
         database.close()
         return ans
 
-    def insert_paragraph(self, link, text, theme):
+    def insert_paragraph(self, link, caption, text, theme):
         database = sqlite3.connect(self.path)
         cursor = database.cursor()
         query = "SELECT * FROM paragraph WHERE `link` = ? and `text` = ? and `theme` = ?"
         ans = cursor.execute(query, (link, text, theme)).fetchall()
         if len(ans) == 0:
             query = "INSERT INTO `paragraph` (`id`, `link`, `caption`, `text`, `theme`, `date`) VALUES (NULL, " \
-                    "?, 'site', ?, ?, CURRENT_TIMESTAMP);"
+                    "?, ?, ?, ?, CURRENT_TIMESTAMP);"
 
-            cursor.execute(query, (link, text, theme))
+            cursor.execute(query, (link, caption, text, theme))
+
+            #если надо сделать подготовку к выборке
+            self.insert(theme, 'web page', text, link)
         else:
             pass
         #             print(len(ans))

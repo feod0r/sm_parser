@@ -56,20 +56,20 @@ class GrabSM(object):
         db = DbConnect()
 
         # парсинг телеги
-        for q in self.requests:
-            print(datetime.now().strftime("[%D %H:%M:%S]"),
-                  "[TG] Post/Dup {}".format(self.search_tg(q.split(':')[1], 100)).ljust(33, ' '), '| {}'.format(q))
+        # for q in self.requests:
+        #     print(datetime.now().strftime("[%D %H:%M:%S]"),
+        #           "[TG] Post/Dup {}".format(self.search_tg(q.split(':')[1], 100)).ljust(33, ' '), '| {}'.format(q))
 
         # парсинг вк
-        for q in self.requests:
-            if not q.split(':')[1] in self.newestPostVK:
-                self.newestPostVK[q] = 0
-            print(datetime.now().strftime("[%D %H:%M:%S]"),
-                  "[VK] Post/Dup {}".format(self.add_vk(self.vk_search(q.split(':')[1],125), q.split(':')[1])).ljust(33,' '), '| {}'.format(q))
+        # for q in self.requests:
+        #     if not q.split(':')[1] in self.newestPostVK:
+        #         self.newestPostVK[q] = 0
+        #     print(datetime.now().strftime("[%D %H:%M:%S]"),
+        #           "[VK] Post/Dup {}".format(self.add_vk(self.vk_search(q.split(':')[1],125), q.split(':')[1])).ljust(33,' '), '| {}'.format(q))
 
-
-        for i in self.vkPool.items:
-            db.insert('ИМПМО', i['query'], i['text'], i['wallUrl'])
+        self.check_links()
+        # for i in self.vkPool.items:
+        #     db.insert('ИМПМО', i['query'], i['text'], i['wallUrl'])
 
 
         # if self.iteration == 0:
@@ -115,6 +115,13 @@ class GrabSM(object):
                     story.append(cleanup(i))
 
         return story
+
+    def check_links(self):
+        db = DbConnect()
+        links = db.show_all_links()
+        for i in links:
+            for j in self.parse_link(i[1]):
+                db.insert_paragraph(i[1], i[2], j, i[3])
 
     # db    db db   dD
     # 88    88 88 ,8P'
