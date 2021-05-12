@@ -37,6 +37,8 @@ class GrabSM(object):
         self.newestPostTG = json.load(open('newestPostTG.json', 'r', encoding="utf-8"))
         self.newestPostVK = json.load(open('newestPostVK.json', 'r', encoding="utf-8"))
 
+        self.db = DbConnect()
+
         # отладка. ссылки сохранены в файл
         # self.links = json.load(open('links.json', 'r'))
         '''self.requests.append('мирэа отзывы')
@@ -53,7 +55,7 @@ class GrabSM(object):
         f.close()
         self.vkPool.protect()
 
-        db = DbConnect()
+
 
         # парсинг телеги
         # for q in self.requests:
@@ -77,6 +79,8 @@ class GrabSM(object):
         self.iteration += 1
         self.vkPool.free()
 
+        print(datetime.now().strftime("[%D %H:%M:%S]"), len(self.vkPool.items))
+
         json.dump(self.newestPostTG, open('newestPostTG.json', 'w', encoding='utf8'), ensure_ascii=False)
         json.dump(self.newestPostVK, open('newestPostVK.json', 'w', encoding='utf8'), ensure_ascii=False)
 
@@ -97,7 +101,7 @@ class GrabSM(object):
             text = re.sub(r'<style[^>]*>[^<]*<\/style>', '', text)
             text = re.sub(r'\s+', ' ', text)
             #     text = re.sub(r'<[a-zA-Z0-9\/\ "=:;\._\-\%]*>', '', text)
-            text = re.sub(r'<[^>]*>', '', text)
+            text = re.sub(r'<[^>]*>', ' ', text)
             return text
 
         try:
@@ -117,11 +121,14 @@ class GrabSM(object):
         return story
 
     def check_links(self):
-        db = DbConnect()
-        links = db.show_all_links()
-        for i in links:
+        links = self.db.show_all_links()
+        for num, i in enumerate(links):
+            print(datetime.now().strftime("[%D %H:%M:%S]"), f'total links parsed: {num}/{len(links)}\r')
             for j in self.parse_link(i[1]):
-                db.insert_paragraph(i[1], i[2], j, i[3])
+                status = self.db.insert_paragraph(i[1], i[2], j, i[3])
+                if status:
+                    self.vkPool.insert(status)
+
 
     # db    db db   dD
     # 88    88 88 ,8P'

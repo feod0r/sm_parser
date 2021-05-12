@@ -32,21 +32,21 @@ class Queue:
         if str(item.get('owner_id', 0)) in bl:
             print(datetime.now().strftime("[%D %H:%M:%S]"), '[Blacklisted]', item.get('owner_id', 0))
             return False
-
-        for i in self.items:
-            if item['se'] == 'v':
-                if item['text'].lower().find(' сош ') != -1:
-                    in_collection = True
-                    # print(item['text'])
-                if ((item.get('owner_id', '') == i.get('owner_id', '')) and (item['id'] == i['id'])) or (
-                        item['text'][:125] == i['text'][:125]):
-                    # print(json.dump(item, open('vk.json','w')))
-                    in_collection = True
-            if item['se'] == 't':
-                if ((item.get('peer_id', '') == i.get('peer_id', '')) and (item['id'] == i['id'])) or (
-                        item['text'][:125] == i['text'][:125]):
-                    in_collection = True
-                    # print(json.dump(item, open('tg.json', 'w')))
+        if item['se'] != 'w':
+            for i in self.items:
+                if item['se'] == 'v':
+                    if item['text'].lower().find(' сош ') != -1:
+                        in_collection = True
+                        # print(item['text'])
+                    if ((item.get('owner_id', '') == i.get('owner_id', '')) and (item['id'] == i['id'])) or (
+                            item['text'][:125] == i['text'][:125]):
+                        # print(json.dump(item, open('vk.json','w')))
+                        in_collection = True
+                if item['se'] == 't':
+                    if ((item.get('peer_id', '') == i.get('peer_id', '')) and (item['id'] == i['id'])) or (
+                            item['text'][:125] == i['text'][:125]):
+                        in_collection = True
+                        # print(json.dump(item, open('tg.json', 'w')))
         if not in_collection:
             self.items.insert(0, item)
 
