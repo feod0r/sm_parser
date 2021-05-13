@@ -421,8 +421,8 @@ def links_link(update: Update, context: CallbackContext) -> int:
     if update.message.text.lower() == 'отмена':
         update.message.reply_text('Отменено')
         return ConversationHandler.END
-    context.user_data['link_theme'] = update.message.text
-    query = f'Тему "{update.message.text}" запомнил.\n А теперь, укажите ссылку: '
+    context.user_data['link_theme'] = update.message.text.lower()[:5]
+    query = f'Тему "{update.message.text.lower()[:5]}" запомнил.\n А теперь, укажите ссылку: '
     update.message.reply_text(query)
     print(context.user_data)
 
