@@ -119,3 +119,4 @@ config.json
 *.bin
 .idea
 .DS_store
+DbConnect.py

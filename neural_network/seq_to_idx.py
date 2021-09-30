@@ -49,7 +49,6 @@ nltk.download('punkt')
                                                                         
 
 def get_tokens(seqs):
-    
     # очистка
     for ind, seq in enumerate(seqs):
         seq = re.sub(r"http\S+", "", seq)
