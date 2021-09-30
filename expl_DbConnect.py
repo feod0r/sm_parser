@@ -7,7 +7,7 @@ class DbConnect:
     def __init__(self):
         self.path = '../data/classes.db'
         # self.database = sqlite3.connect(self.path, timeout=10)
-        self.database = pymysql.connect(host="192.168.1.6", user="romecraft", password="osUUfd7pk1uGjccL", database="mirea", port=3306)
+        self.database = pymysql.connect(host="192.168.1.6", user="user", password="pwd", database="mirea", port=3306)
         cursor = self.database.cursor()
         cursor.execute("CREATE TABLE IF NOT EXISTS `votes` ("
                        "`id` int NOT NULL PRIMARY KEY AUTO_INCREMENT,"
